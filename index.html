@@ -1,25 +1,36 @@
 <!doctype html>
-<html>
+<html lang="de">
     <head>
+        <title>Travel infos</title>
         <script type="application/javascript">
+            customElements.define('country-info',
+                class extends HTMLElement {
+                    constructor() {
+                        super();
+                        let template = document.querySelector('template');
+                        this.attachShadow({mode: 'open'})
+                            .appendChild(template.content.cloneNode(true));
+                    }
+                });
             async function appendCountryInfos(url) {
                 let response = await fetch(url);
                 let markupText = await response.text();
 
                 let page = document.createElement('html');
                 page.innerHTML = markupText;
-                let heading = page.querySelector('.heading__title');
-                heading.removeChild(heading.querySelector('.heading__flag'));
+                let headingText = page.querySelector('.heading__title').innerText.replace(": Reise- und Sicherheitshinweise","");
 
-                let relevant_news = [...page.querySelectorAll('#content_0, #content_0 ~ *')];
+                let relevant_news = [...page.querySelectorAll('#content_0 ~ *')];
                 let otherNewsId = relevant_news.indexOf(relevant_news.find(elem => elem.id === 'content_1'));
                 relevant_news = relevant_news.slice(0, otherNewsId);
 
-                let div = document.createElement('div');
-                div.appendChild(heading);
-                relevant_news.forEach(elem => div.appendChild(elem));
+                let countryInfo = document.createElement('country-info');
+                countryInfo.innerHTML =
+                   `<h2 slot="head">${headingText}</h2>
+                    <div slot="content">${relevant_news.map(elem => elem.outerHTML).join('')}</div>
+                    <a slot="link" href="${url}">Link</a>`;
 
-                document.body.appendChild(div);
+                document.body.appendChild(countryInfo);
             }
             window.onload = async () => {
                 [
@@ -48,6 +59,20 @@
         </script>
     </head>
     <body>
+        <template>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+            <div class="card mb-1">
+                <div  class="card-body">
+                    <div class="card-title">
+                        <slot name="head">Head</slot>
+                        <slot name="link">Link</slot>
+                    </div>
+                    <p class="card-text">
+                        <slot name="content">text</slot>
+                    </p>
+                </div>
+            </div>
+        </template>
     </body>
 </html>
