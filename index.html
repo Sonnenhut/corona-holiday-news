@@ -26,9 +26,8 @@
 
                 let countryInfo = document.createElement('country-info');
                 countryInfo.innerHTML =
-                   `<h2 slot="head">${headingText}</h2>
-                    <div slot="content">${relevant_news.map(elem => elem.outerHTML).join('')}</div>
-                    <a slot="link" href="${url}">Link</a>`;
+                   `<h2 slot="head"><a href="${url}">${headingText}</a></h2>
+                    <div slot="content">${relevant_news.map(elem => elem.outerHTML).join('')}</div>`;
 
                 document.body.appendChild(countryInfo);
             }
@@ -66,7 +65,6 @@
                 <div  class="card-body">
                     <div class="card-title">
                         <slot name="head">Head</slot>
-                        <slot name="link">Link</slot>
                     </div>
                     <p class="card-text">
                         <slot name="content">text</slot>
