@@ -18,7 +18,18 @@
 
                 let page = document.createElement('html');
                 page.innerHTML = markupText;
-                let headingText = page.querySelector('.heading__title').innerText.replace(": Reise- und Sicherheitshinweise","");
+
+                // retain relative links to "/something"
+                page.querySelectorAll('[href]').forEach(withLink => {
+                    let fullUrl = new URL(url);
+                    const originalHref = withLink.getAttribute("href");
+                    if(originalHref.startsWith("/")) {
+                        fullUrl.pathname = withLink.getAttribute("href");
+                        withLink.href = fullUrl.href;
+                    }
+                });
+
+                let headingText = page.querySelector('.heading__title').innerText.replace(": Reise- und Sicherheitshinweise","").trim();
 
                 let relevant_news = [...page.querySelectorAll('#content_0 ~ *')];
                 let otherNewsId = relevant_news.indexOf(relevant_news.find(elem => elem.id === 'content_1'));
@@ -32,28 +43,31 @@
                 document.body.appendChild(countryInfo);
             }
             window.onload = async () => {
-                [
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/peru-node/perusicherheit/211938",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/bolivien-node/boliviensicherheit/213428",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/myanmar-node/myanmarsicherheit/212100",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/nicaragua-node/nicaraguasicherheit/223316",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/kanada-node/kanadasicherheit/204874",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/brasilien-node/brasiliensicherheit/201092",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/madagaskar-node/madagaskarsicherheit/207960",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/finnland-node/finnlandsicherheit/211624",
-"https://www.auswaertiges-amt.de/de/ReiseUndSicherheit/suedafrikasicherheit/208400",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/kuba-node/kubasicherheit/212208",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/indonesien-node/indonesiensicherheit/212396",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/panama-node/panamasicherheit/206378",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/marokko-node/marokkosicherheit/224080",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/srilanka-node/srilankasicherheit/212254",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/dominikanischerepublik-node/dominikanischerepubliksicherheit/206146",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/vietnam-node/vietnamsicherheit/217274",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/philippinen-node/philippinensicherheit/212492",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/chile-node/chilesicherheit/201230",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/australien-node/australiensicherheit/213920",
-"https://www.auswaertiges-amt.de/de/aussenpolitik/laender/neuseeland-node/neuseelandsicherheit/220146"
-                ].map(url => appendCountryInfos(url));
+                const urls = [
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/peru-node/perusicherheit/211938",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/bolivien-node/boliviensicherheit/213428",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/myanmar-node/myanmarsicherheit/212100",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/nicaragua-node/nicaraguasicherheit/223316",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/kanada-node/kanadasicherheit/204874",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/brasilien-node/brasiliensicherheit/201092",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/madagaskar-node/madagaskarsicherheit/207960",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/finnland-node/finnlandsicherheit/211624",
+                    "https://www.auswaertiges-amt.de/de/ReiseUndSicherheit/suedafrikasicherheit/208400",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/kuba-node/kubasicherheit/212208",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/indonesien-node/indonesiensicherheit/212396",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/panama-node/panamasicherheit/206378",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/marokko-node/marokkosicherheit/224080",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/srilanka-node/srilankasicherheit/212254",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/dominikanischerepublik-node/dominikanischerepubliksicherheit/206146",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/vietnam-node/vietnamsicherheit/217274",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/philippinen-node/philippinensicherheit/212492",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/chile-node/chilesicherheit/201230",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/australien-node/australiensicherheit/213920",
+                    "https://www.auswaertiges-amt.de/de/aussenpolitik/laender/neuseeland-node/neuseelandsicherheit/220146"
+                ];
+                for (const url of urls) {
+                    await appendCountryInfos(url);
+                }
             }
         </script>
     </head>
